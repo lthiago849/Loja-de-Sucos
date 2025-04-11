@@ -4,8 +4,8 @@ from django.views.generic import TemplateView
 class IndexView(TemplateView):
     template_name = 'index.html'
 
-class TesteView(TemplateView):
-    template_name = 'teste.html'
+class VendaView(TemplateView):
+    template_name = 'venda.html'
 
 class ModeloView(TemplateView):
     template_name = 'modelo/modelo.html'
@@ -13,3 +13,5 @@ class ModeloView(TemplateView):
 class InicioView(TemplateView):
     template_name = 'inicio.html'
 
+class SucoView(TemplateView):
+    template_name = 'produtos/suco.html'
