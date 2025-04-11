@@ -1,0 +1,8 @@
+.destaque-banner {
+    background-image: url('/static/img/banner1.jpg'); /* coloque sua imagem aqui */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    padding: 4rem 2rem;
+}

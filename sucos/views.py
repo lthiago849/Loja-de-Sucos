@@ -6,3 +6,10 @@ class IndexView(TemplateView):
 
 class TesteView(TemplateView):
     template_name = 'teste.html'
+
+class ModeloView(TemplateView):
+    template_name = 'modelo/modelo.html'
+
+class InicioView(TemplateView):
+    template_name = 'inicio.html'
+

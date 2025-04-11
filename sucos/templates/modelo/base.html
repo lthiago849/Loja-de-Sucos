@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {% block titulo %}
+    <title>Sistema de Sucos</title>
+    {% endblock %}
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+</head>
+<body>
+
+    <!-- MENU -->
+    {% block menu %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">SucoMania</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'teste' %}">Vendas</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" >Produção</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Relatórios</a></li>
+            </ul>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <!-- DESTAQUE / BANNER -->
+    {% block destaque %}
+    <div class="jumbotron text-white text-center mb-0 destaque-banner">
+        <h1 class="display-4">Bem-vindo ao Sistema de Sucos!</h1>
+        <p class="lead">Controle de vendas, produção e relatórios em um só lugar.</p>
+    </div>
+    {% endblock %}
+    
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    {% block conteudo %}
+    <div class="container my-4">
+        <h3>Conteúdo principal</h3>
+        <p>Essa área será substituída pelas páginas específicas.</p>
+    </div>
+    {% endblock %}
+
+    <!-- RODAPÉ -->
+    {% block rodape %}
+    <footer class="bg-light text-center py-3 mt-auto">
+        <p class="mb-0">&copy; 2025 SucoMania - Todos os direitos reservados.</p>
+    </footer>
+    {% endblock %}
+
+    <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'js/popper.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+</html>
