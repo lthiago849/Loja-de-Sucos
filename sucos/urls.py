@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import IndexView, VendaView, ModeloView, InicioView, GeladosView, ProducaoView, ProducaoSucoView, ProducaoGeladoView
+from .views import IndexView, VendaView, ModeloView, InicioView, GeladosView, ProducaoView, CompraView, ProducaoSucoView
 # from .views import SucoView
 from .views import listar_sucos,listar_picole,listar_moreninha,listar_cremosinho
 from .views import adicionar_ao_carrinho,  ver_carrinho,  remover_do_carrinho, atualizar_carrinho
@@ -12,8 +12,8 @@ urlpatterns = [
     path('', InicioView.as_view(), name = 'inicio'),
     path('gelados/', GeladosView.as_view(), name = 'gelados'),
     path('producao/', ProducaoView.as_view(), name = 'producao'),
+    path('compra/', CompraView.as_view(), name = 'compra'),
     path('producao_suco/', ProducaoSucoView.as_view(), name = 'producao_suco'),
-    path('producao_gelado/', ProducaoGeladoView.as_view(), name = 'producao_gelado'),
 
 
     # path('suco/', SucoView.as_view(), name='suco'),

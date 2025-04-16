@@ -1,7 +1,5 @@
-{% extends 'inicio.html'%}
+{% extends 'modelo/base.html' %}
 
-
-<!-- MENU -->
 {% block menu %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
     <div class="container">
@@ -44,12 +42,16 @@
         </div>
     </div>
     {% endblock %}
+    <!-- DESTAQUE / BANNER -->
+    {% block destaque %}
+    <div class="jumbotron text-white text-center mb-0 destaque-banner">
+        <h1 class="display-4">Bem-vindo ao Sistema de Sucos!</h1>
+        <p class="lead">Controle de vendas, produção e relatórios em um só lugar.</p>
+    </div>
+    {% endblock %}
+    
 
     <!-- CONTEÚDO PRINCIPAL -->
     {% block conteudo %}
-    <div class="container my-4 d-flex justify-content-center">
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'gelados' %}">Gelados</a>
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'sucos' %}">Suco</a>
-
-    </div>
+    <p>Compra geral</p>
     {% endblock %}

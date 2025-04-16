@@ -1,4 +1,4 @@
-{% extends 'modelo/base.html' %}
+{% extends 'venda.html' %}
 {% block conteudo %}
 <div class="container my-4">
     <h3>Meu Carrinho</h3>
@@ -48,6 +48,8 @@
         <p>Seu carrinho está vazio.</p>
     {% endif %}
 </div>
+<div class="container my-4">
+
         <!-- NOVO BLOCO - FORMA DE PAGAMENTO -->
         <div class="border-top pt-3">
             <h4>Forma de Pagamento</h4>
@@ -128,5 +130,6 @@
             });
         });
         </script>
-        
+</div>
+       
 {% endblock %}

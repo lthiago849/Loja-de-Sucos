@@ -23,11 +23,11 @@ class GeladosView(TemplateView):
 class ProducaoView(TemplateView):
     template_name = 'producao/producao.html'
 
-class ProducaoSucoView(TemplateView):
-    template_name  = 'producao/producao_suco.html'
+class CompraView(TemplateView):
+    template_name  = 'producao/compra.html'
 
-class ProducaoGeladoView(TemplateView):
-    template_name = 'producao/producao_gelados.html'
+class ProducaoSucoView(TemplateView):
+    template_name = 'producao/producao_suco.html'
 
 
 def listar_sucos(request):

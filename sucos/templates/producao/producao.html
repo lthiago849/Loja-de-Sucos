@@ -1,4 +1,4 @@
-{% extends 'modelo/base.html' %}
+{% extends 'venda.html' %}
 
 
     <!-- DESTAQUE / BANNER -->
@@ -13,9 +13,8 @@
     <!-- CONTEÚDO PRINCIPAL -->
     {% block conteudo %}
     <div class="container my-4 d-flex justify-content-center">
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'producao_gelado' %}">Compra Dos Gelados</a>
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'producao_suco' %}">Compra Do Suco</a>
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'sucos' %}">Relatorio</a>
+    <a class="btn btn-outline-warning mx-2"  href="{% url 'producao_suco' %}">Produção De Suco</a>
+    <a class="btn btn-outline-warning mx-2"  href="{% url 'compra' %}">Compra geral</a>
 
 
     </div>
