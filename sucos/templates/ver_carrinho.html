@@ -1,0 +1,132 @@
+{% extends 'modelo/base.html' %}
+{% block conteudo %}
+<div class="container my-4">
+    <h3>Meu Carrinho</h3>
+
+    {% if itens %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Preço</th>
+                    <th>Total</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                <tr>
+                    <td>{{ item.product.title }}</td>
+                    <td>
+                        <form method="post" action="{% url 'atualizar_carrinho' item.id %}" class="d-flex align-items-center">
+                            {% csrf_token %}
+                            <input 
+                                type="number" 
+                                name="quantidade" 
+                                value="{{ item.quantity }}" 
+                                min="1" 
+                                class="form-control form-control-sm me-2" 
+                                style="width: 80px;"
+                            >
+                            <button type="submit" class="btn btn-success btn-sm">Atualizar</button>
+                        </form>
+                    </td>
+                    <td>R$ {{ item.product.price }}</td>
+                    <td>R$ {{ item.subtotal|floatformat:2 }}</td>
+                    <td>
+                        <form method="post" action="{% url 'remover_do_carrinho' item.id %}" style="margin-top: 5px;">
+                            {% csrf_token %}
+                            <button class="btn btn-danger btn-sm">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Seu carrinho está vazio.</p>
+    {% endif %}
+</div>
+        <!-- NOVO BLOCO - FORMA DE PAGAMENTO -->
+        <div class="border-top pt-3">
+            <h4>Forma de Pagamento</h4>
+            <div class="mb-3">
+                <label class="btn btn-outline-primary me-2">
+                    <input type="radio" name="payment" value="pix" autocomplete="off" class="payment-radio"> Pix
+                </label>
+                <label class="btn btn-outline-primary me-2">
+                    <input type="radio" name="payment" value="dinheiro" autocomplete="off" class="payment-radio"> Dinheiro
+                </label>
+                <label class="btn btn-outline-primary me-2">
+                    <input type="radio" name="payment" value="debito" autocomplete="off" class="payment-radio"> Débito
+                </label>
+                <label class="btn btn-outline-primary me-2">
+                    <input type="radio" name="payment" value="credito" autocomplete="off" class="payment-radio"> Crédito (+3.58%)
+                </label>
+            </div>
+        
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Resumo</h5>
+                            <p>Subtotal: <span class="float-end">R$ {{ total|floatformat:2 }}</span></p>
+                            <p id="juros" style="display:none;">Juros (3.58%): <span class="float-end" id="valor-juros">R$ 0,00</span></p>
+                            <hr>
+                            <h5>Total: <span class="float-end" id="total-final">R$ {{ total|floatformat:2 }}</span></h5>
+                        </div>
+                    </div>
+        
+                    <!-- Botão Finalizar -->
+                    <form method="post" id="finalizar-form" style="display: none; margin-top: 20px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="forma_pagamento" id="forma-pagamento">
+                        <input type="hidden" name="valor_total" id="valor-total-hidden">
+                        <button type="submit" class="btn btn-primary w-100">Finalizar Compra</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        {{ total|floatformat:2|json_script:"total-original" }}
+        
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const totalOriginal = parseFloat(JSON.parse(document.getElementById('total-original').textContent.replace(',', '.')));
+            const jurosElement = document.getElementById('juros');
+            const valorJurosElement = document.getElementById('valor-juros');
+            const totalFinalElement = document.getElementById('total-final');
+            const finalizarForm = document.getElementById('finalizar-form');
+            const formaPagamentoInput = document.getElementById('forma-pagamento');
+            const valorTotalHiddenInput = document.getElementById('valor-total-hidden');
+        
+            const paymentRadios = document.querySelectorAll('.payment-radio');
+        
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    const forma = this.value;
+                    formaPagamentoInput.value = forma;
+        
+                    if (forma === 'credito') {
+                        const juros = totalOriginal * 0.0358;
+                        const totalComJuros = totalOriginal + juros;
+        
+                        jurosElement.style.display = 'block';
+                        valorJurosElement.textContent = 'R$ ' + juros.toFixed(2).replace('.', ',');
+                        totalFinalElement.textContent = 'R$ ' + totalComJuros.toFixed(2).replace('.', ',');
+        
+                        valorTotalHiddenInput.value = totalComJuros.toFixed(2);
+                    } else {
+                        jurosElement.style.display = 'none';
+                        totalFinalElement.textContent = 'R$ ' + totalOriginal.toFixed(2).replace('.', ',');
+                        valorTotalHiddenInput.value = totalOriginal.toFixed(2);
+                    }
+        
+                    finalizarForm.style.display = 'block';
+                });
+            });
+        });
+        </script>
+        
+{% endblock %}

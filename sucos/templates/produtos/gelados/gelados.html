@@ -1,0 +1,19 @@
+{% extends 'modelo/base.html' %}
+
+    <!-- DESTAQUE / BANNER -->
+    {% block destaque %}
+    <div class="jumbotron text-white text-center mb-0 destaque-banner">
+        <h1 class="display-4">Escolha o Gelado!</h1>
+    </div>
+    {% endblock %}
+    
+
+{% block conteudo %}
+<div class="container my-4 d-flex justify-content-center">
+<a class="btn btn-outline-warning mx-2"  href="{% url 'picole' %}">Picole</a>
+<a class="btn btn-outline-warning mx-2"  href="{% url 'moreninha' %}">Moreninha</a>
+<a class="btn btn-outline-warning mx-2"  href="{% url 'cremosinho' %}">Cremosinho</a>
+
+
+</div>
+{% endblock %}

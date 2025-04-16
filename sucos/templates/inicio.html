@@ -4,3 +4,47 @@
 <title> Cia do Suco </title>
 {% endblock %}
 
+
+    <!-- MENU -->
+    {% block menu %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+                <!-- Ícone de suco (usando Font Awesome) -->
+                <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
+                <!-- Texto com estilo personalizado -->
+                <span class="fw-bold fs-4" style="letter-spacing: 1px;">CIA DO SUCO</span>
+            </a>
+            <div class="navbar-text ms-auto d-none d-lg-block">
+                <small class="text-white">Bem-vindo ao sistema de gestão</small>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Banner de boas-vindas -->
+    <div class="bg-light py-4 text-center">
+        <div class="container">
+            <h1 class="display-5 text-success fw-bold">Bem-vindo ao Sistema de Sucos!</h1>
+            <p class="lead">Controle de vendas, produção e relatórios em um só lugar</p>
+            <p class="lead">Escolha uma das opções abaixo!</p>
+
+        </div>
+    </div>
+    {% endblock %}
+
+    <!-- DESTAQUE / BANNER -->
+    {% block destaque %}
+
+    {% endblock %}
+    
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    {% block conteudo %}
+    <div class="container my-4 d-flex justify-content-center">
+    <a class="btn btn-outline-warning mx-2"  href="{% url 'venda' %}">Vendas</a>
+    <a class="btn btn-outline-warning mx-2"  href="{% url 'producao' %}">Produção</a>
+    <a class="btn btn-outline-warning mx-2"  href="{% url 'sucos' %}">Relatorio</a>
+
+
+    </div>
+    {% endblock %}
