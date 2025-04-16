@@ -1,12 +1,12 @@
-{% extends 'modelo/base.html' %}
+{% extends 'produtos/suco.html' %}
 
     <!-- DESTAQUE / BANNER -->
     {% block destaque %}
     <div class="jumbotron text-white text-center mb-0 destaque-banner">
-        <h1 class="display-4">Escolha os sabores de Sucos!</h1>
+        <h1 class="display-4">Escolha os sabores de Moreninha!</h1>
     </div>
     {% endblock %}
-    
+
 
     <!-- CONTEÚDO PRINCIPAL -->
     {% load static %}
@@ -14,39 +14,39 @@
     {% block conteudo %}
     <div class="container my-4">
         <h3>Produtos de Sucos</h3>
-        <p>Escolha o seu suco favorito!</p>
+        <p>Escolha o seu moreninha favorito!</p>
         
-        {% if sucos %}
+        {% if moreninhas %}
             <div class="row">
-                {% for suco in sucos %}
+                {% for moreninha in moreninhas %}
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">{{ suco.title }}</h5>
+                            <h5 class="card-title">{{ moreninha.title }}</h5>
                             <p class="card-text">
-                                Preço: R$ {{ suco.price }}<br>
-                                Estoque: {{ suco.quantity }}
+                                Preço: R$ {{ moreninha.price }}<br>
+                                Estoque: {{ moreninha.quantity }}
                             </p>
                 
                             <!-- Formulário para adicionar ao carrinho -->
                             <form method="post" action="{% url 'adicionar_carrinho' %}">
                                 {% csrf_token %}
-                                <input type="hidden" name="produto_id" value="{{ suco.id }}">
+                                <input type="hidden" name="produto_id" value="{{ moreninha.id }}">
                             
                                 <div class="input-group mb-3">
                                     <input type="number" 
                                            name="quantidade"
                                            value="1"
                                            min="1"
-                                           max="{{ suco.quantity }}"
+                                           max="{{ moreninha.quantity }}"
                                            class="form-control"
-                                           {% if suco.quantity == 0 %}disabled{% endif %}>
+                                           {% if moreninha.quantity == 0 %}disabled{% endif %}>
                                 </div>
                             
                                 <button type="submit"
                                         class="btn btn-primary"
-                                        {% if suco.quantity == 0 %}disabled{% endif %}>
-                                    {% if suco.quantity == 0 %}Esgotado{% else %}Adicionar{% endif %}
+                                        {% if moreninha.quantity == 0 %}disabled{% endif %}>
+                                    {% if moreninha.quantity == 0 %}Esgotado{% else %}Adicionar{% endif %}
                                 </button>
                             </form>
                             
@@ -57,7 +57,7 @@
                 
             </div>
         {% else %}
-            <p>Nenhum suco disponível no momento!</p>
+            <p>Nenhum moreninha disponível no momento!</p>
         {% endif %}
     </div>
     {% endblock %}

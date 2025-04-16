@@ -1,0 +1,22 @@
+{% extends 'modelo/base.html' %}
+
+
+    <!-- DESTAQUE / BANNER -->
+    {% block destaque %}
+    <div class="jumbotron text-white text-center mb-0 destaque-banner">
+        <h1 class="display-4">Bem-vindo ao Sistema de Sucos!</h1>
+        <p class="lead">Controle de vendas, produção e relatórios em um só lugar.</p>
+    </div>
+    {% endblock %}
+    
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    {% block conteudo %}
+    <div class="container my-4 d-flex justify-content-center">
+    <a class="btn btn-outline-warning mx-2"  href="{% url 'producao_gelado' %}">Compra Dos Gelados</a>
+    <a class="btn btn-outline-warning mx-2"  href="{% url 'producao_suco' %}">Compra Do Suco</a>
+    <a class="btn btn-outline-warning mx-2"  href="{% url 'sucos' %}">Relatorio</a>
+
+
+    </div>
+    {% endblock %}
