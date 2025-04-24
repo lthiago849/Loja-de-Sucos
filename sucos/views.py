@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect,  get_object_or_404
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from .models import Product, Cart, CartItem
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 class IndexView(TemplateView):
@@ -105,3 +106,9 @@ def atualizar_carrinho(request, item_id):
             item.delete()  # Se quantidade for 0, remove
 
     return redirect('ver_carrinho')
+
+
+# class InicioView(LoginRequiredMixin, TemplateView):
+#     template_name = "inicio.html"
+#     login_url = 'accounts/login/'  # nome da URL da sua tela de login
+

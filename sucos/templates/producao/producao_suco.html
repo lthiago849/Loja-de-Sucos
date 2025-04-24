@@ -42,7 +42,16 @@
         </div>
     </div>
     {% endblock %}
-
+    {% block content %}
+    <h2>Adicionar Ingrediente</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+  
+      <button type="submit" name="salvar">Salvar</button>
+      <button type="submit" name="salvar_adicionar_outro">Salvar e adicionar outro(a)</button>
+    </form>
+  {% endblock %}
     <!-- CONTEÚDO PRINCIPAL -->
     {% block conteudo %}
     <p>Produção do Suco </p>

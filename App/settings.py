@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-cofsj781v+gd@1vwh)6i$l4up)$-9fj^v@mn0kuw3sl)u4-r7=
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# LOGIN_URL = 'accounts/login/'  # use o nome da URL da view de login
 
 
 # Application definition

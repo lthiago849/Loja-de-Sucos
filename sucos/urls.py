@@ -29,5 +29,4 @@ urlpatterns = [
     path('carrinho/',ver_carrinho, name='ver_carrinho'),
     path('carrinho/remover/<int:item_id>/', remover_do_carrinho, name='remover_do_carrinho'),
     path('carrinho/atualizar/<int:item_id>/', atualizar_carrinho, name='atualizar_carrinho'),
-
 ]
