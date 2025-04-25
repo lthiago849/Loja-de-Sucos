@@ -2,21 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# Create your models here.
-class Brand(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Nome')
-    is_active = models.BooleanField(default=True, verbose_name='Ativo')
-    description = models.TextField(null=False, blank= True, verbose_name='Descrição')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='Atualizado em')
-
-    class Meta:
-        ordering = ['name']
-        verbose_name = 'Marca'
-
-    def __str__(self):
-        return self.name
-    
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name='Nome')
     is_active = models.BooleanField(default=True, verbose_name='Ativo')
@@ -33,8 +18,8 @@ class Category(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length= 100, verbose_name='Titutlo')
+    ingredient  = models.ForeignKey('Ingredient', on_delete=models.PROTECT,related_name='products', verbose_name='Ingrediente')
     quantity = models.PositiveBigIntegerField(default=0, verbose_name='Quantidade em Estoque')
-    brand = models.ForeignKey(Brand, on_delete=models.PROTECT,related_name='products', verbose_name='Marca')
     category = models.ForeignKey(Category, on_delete= models.PROTECT, related_name='products', verbose_name='Categoria')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Preço')
     is_active = models.BooleanField(default=True, verbose_name='Ativo')  
@@ -64,21 +49,21 @@ class CartItem(models.Model):
         return f"{self.quantity}x {self.product.title}"
     
 class Ingredient(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Ingrediente')
-    quantity = models.PositiveBigIntegerField(default=0, verbose_name='Quantidade em Estoque')
     category_ingredient = models.ForeignKey('CategoryIngredient', on_delete= models.PROTECT, related_name='ingredientes', verbose_name='Categoria')
+    quantity = models.DecimalField(max_digits=10,decimal_places=2,default=0.00,verbose_name='Quantidade em Estoque') 
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Preço')
     is_active = models.BooleanField(default=True, verbose_name='Ativo')  
     description = models.TextField(null=True, blank=True, verbose_name='Descrição')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Atualizado em')  
     class Meta:
-        ordering = ['name']
-        verbose_name = 'Ingredientes'
+        ordering = ['category_ingredient']
+        verbose_name = 'Ingrediente'
+        verbose_name_plural = 'Ingredientes'
 
     def __str__(self):
-        return self.name
-
+        # Certifique-se de que category_ingredient tenha um campo 'name' ou similar
+        return f"{self.category_ingredient.name}"  
         
 class CategoryIngredient(models.Model):
     name = models.CharField(max_length=100, verbose_name='Nome')
