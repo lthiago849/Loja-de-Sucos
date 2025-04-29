@@ -1,55 +1,56 @@
-{% extends 'inicio.html'%}
+{% extends 'inicio.html' %}
 
-
-<!-- MENU -->
 {% block menu %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
     <div class="container">
-        <!-- Logo e título -->
         <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
             <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
-            <span class="fw-bold fs-4" style="letter-spacing: 1px;">CIA DO SUCO</span>
+            <span class="fw-bold fs-4">CIA DO SUCO</span>
         </a>
 
-        <!-- Botão do menu hamburguer (mobile) -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Itens do menu -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'producao' %}">Produção</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'relatorio' %}">Relatórios</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
             </ul>
 
-            <!-- Mensagem de boas-vindas (visível apenas em telas grandes) -->
-            <div class="navbar-text d-none d-lg-block">
-                <small class="text-white">Bem-vindo ao sistema de gestão</small>
-            </div>
+            <a class="navbar-brand text-white" href="{% url 'admin:index' %}">
+                <span class="fw-bold fs-5">Painel Admin 📈</span>
+            </a>
         </div>
     </div>
 </nav>
 
-    <!-- Banner de boas-vindas -->
-    <div class="bg-light py-4 text-center">
-        <div class="container">
-            <h1 class="display-5 text-success fw-bold">Bem-vindo ao Sistema de Sucos!</h1>
-            <p class="lead">Controle de vendas, produção e relatórios em um só lugar</p>
-            <p class="lead">Escolha uma das opções abaixo!</p>
+<div class="bg-light py-5 text-center">
+    <div class="container">
+        <h1 class="display-4 text-success fw-bold mb-3">Página de Vendas</h1>
+        <p class="lead mb-1">Escolha o tipo de produto para registrar a venda.</p>
+        <p class="lead text-muted">Gelados: Picolé, Moreninha, Cremosinho 🧊</p>
+        <p class="lead text-muted">Sucos: Suco Natural 🍊</p>
+    </div>
+</div>
+{% endblock %}
 
+{% block conteudo %}
+<div class="container py-5">
+    <div class="row justify-content-center g-4">
+        <div class="col-md-4">
+            <a href="{% url 'gelados' %}" class="btn btn-outline-info w-100 py-3 shadow-sm">
+                <i class="fas fa-snowflake me-2"></i> Gelados
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'sucos' %}" class="btn btn-outline-warning w-100 py-3 shadow-sm">
+                <i class="fas fa-lemon me-2"></i> Sucos Naturais
+            </a>
         </div>
     </div>
-    {% endblock %}
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    {% block conteudo %}
-    <div class="container my-4 d-flex justify-content-center">
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'gelados' %}">Gelados</a>
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'sucos' %}">Suco</a>
-
-    </div>
-    {% endblock %}
+</div>
+{% endblock %}

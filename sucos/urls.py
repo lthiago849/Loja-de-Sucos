@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import IndexView, VendaView, ModeloView, InicioView, GeladosView, ProducaoView, CompraView
+from .views import IndexView, VendaView, ModeloView, InicioView, GeladosView, RelatorioView
 # from .views import SucoView
 from .views import listar_sucos,listar_picole,listar_moreninha,listar_cremosinho, listar_sucos_producao, adicionar_producao
-from .views import adicionar_ao_carrinho,  ver_carrinho,  remover_do_carrinho, atualizar_carrinho
+from .views import adicionar_ao_carrinho,  ver_carrinho,  remover_do_carrinho, atualizar_carrinho, finalizar_compra, minha_view_personalizada
 
 
 urlpatterns = [
@@ -11,16 +11,13 @@ urlpatterns = [
     path('modelo/', ModeloView.as_view(), name='modelo'),
     path('', InicioView.as_view(), name = 'inicio'),
     path('gelados/', GeladosView.as_view(), name = 'gelados'),
-    path('producao/', ProducaoView.as_view(), name = 'producao'),
-    path('compra/', CompraView.as_view(), name = 'compra'),
 
-
-    # path('suco/', SucoView.as_view(), name='suco'),
-
+    path('relatorio/', RelatorioView.as_view(), name = 'relatorio'),
+    path('minha-acao/', minha_view_personalizada, name='produto_minha_view_personalizada'),
 
     path('sucos/', listar_sucos, name='sucos'),
     path('sucos-producao/', listar_sucos_producao, name='sucos-producao'),
-
+    path('finalizar-compra/', finalizar_compra, name='finalizar_compra'),
     path('adicionar_producao/', adicionar_producao, name='adicionar_producao'),
 
     path('picole/', listar_picole, name='picole'),

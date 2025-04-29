@@ -1,0 +1,13 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools %}
+  <div class="object-tools">
+    <!-- Botão vermelho e grande -->
+    <a href="{% url 'admin:sucos_produto_minha_view_personalizada' %}"
+       class="btn btn-danger"
+       style="padding: 20px 50px; font-size: 24px; font-weight: bold; text-transform: uppercase; border-radius: 12px;">
+      🚨 Ação Personalizada
+    </a>
+  </div>
+  {{ block.super }}
+{% endblock %}

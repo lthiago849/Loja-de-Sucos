@@ -1,50 +1,49 @@
 {% extends 'modelo/base.html' %}
 
 {% block titulo %}
-<title> Cia do Suco </title>
+<title>Cia do Suco</title>
 {% endblock %}
 
+{% block menu %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+            <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
+            <span class="fw-bold fs-4">CIA DO SUCO</span>
+        </a>
+        <a class="navbar-brand text-white" href="{% url 'admin:index' %}">
+            <span class="fw-bold fs-5">Painel Admin 📈</span>
+        </a>
+    </div>
+</nav>
 
-    <!-- MENU -->
-    {% block menu %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
-                <!-- Ícone de suco (usando Font Awesome) -->
-                <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
-                <!-- Texto com estilo personalizado -->
-                <span class="fw-bold fs-4" style="letter-spacing: 1px;">CIA DO SUCO</span>
+<div class="bg-light py-5 text-center">
+    <div class="container">
+        <h1 class="display-4 text-success fw-bold mb-3">Bem-vindo ao Sistema de Sucos!</h1>
+        <p class="lead mb-1">Gerencie suas vendas, acompanhe a produção e gere relatórios completos.</p>
+        <p class="lead text-muted">Escolha uma das opções abaixo para começar.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+<div class="container py-5">
+    <div class="row justify-content-center g-4">
+        <div class="col-md-4">
+            <a href="{% url 'venda' %}" class="btn btn-outline-success w-100 py-3 shadow-sm">
+                <i class="fas fa-shopping-cart me-2"></i> Acessar Vendas
             </a>
-            <div class="navbar-text ms-auto d-none d-lg-block">
-                <small class="text-white">Bem-vindo ao sistema de gestão</small>
-            </div>
         </div>
-    </nav>
-    
-    <!-- Banner de boas-vindas -->
-    <div class="bg-light py-4 text-center">
-        <div class="container">
-            <h1 class="display-5 text-success fw-bold">Bem-vindo ao Sistema de Sucos!</h1>
-            <p class="lead">Controle de vendas, produção e relatórios em um só lugar</p>
-            <p class="lead">Escolha uma das opções abaixo!</p>
-
+        <div class="col-md-4">
+            <a href="{% url 'sucos-producao' %}" class="btn btn-outline-primary w-100 py-3 shadow-sm">
+                <i class="fas fa-industry me-2"></i> Produção de Sucos
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'relatorio' %}" class="btn btn-outline-warning w-100 py-3 shadow-sm">
+                <i class="fas fa-file-alt me-2"></i> Ver Relatórios
+            </a>
         </div>
     </div>
-    {% endblock %}
-
-    <!-- DESTAQUE / BANNER -->
-    {% block destaque %}
-
-    {% endblock %}
-    
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    {% block conteudo %}
-    <div class="container my-4 d-flex justify-content-center">
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'venda' %}">Vendas</a>
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'producao' %}">Produção</a>
-    <a class="btn btn-outline-warning mx-2"  href="{% url 'sucos' %}">Relatorio</a>
-
-
-    </div>
-    {% endblock %}
+</div>
+{% endblock %}

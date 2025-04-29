@@ -1,13 +1,78 @@
 {% extends 'venda.html' %}
+{% block menu %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+            <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
+            <span class="fw-bold fs-4">CIA DO SUCO</span>
+        </a>
 
-    
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'relatorio' %}">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
+            </ul>
+
+            <a class="navbar-brand text-white" href="{% url 'admin:index' %}">
+                <span class="fw-bold fs-5">Painel Admin 📈</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+
+{% endblock %}
 {% block conteudo %}
-<div class="container my-4 d-flex justify-content-center">
-<a class="btn btn-outline-warning mx-2"  href="{% url 'picole' %}">Picole</a>
-<a class="btn btn-outline-warning mx-2"  href="{% url 'moreninha' %}">Moreninha</a>
-<a class="btn btn-outline-warning mx-2"  href="{% url 'cremosinho' %}">Cremosinho</a>
+<div class="container py-5">
+    <h2 class="text-center text-success fw-bold mb-4">Escolha seu Gelado ❄️</h2>
+    <div class="row justify-content-center g-4">
 
+        <!-- Card Picole -->
+        <div class="col-md-4">
+            <a href="{% url 'picole' %}" class="text-decoration-none">
+                <div class="card border-warning shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-ice-cream fa-2x text-warning mb-3"></i>
+                        <h5 class="card-title text-dark fw-bold">Picolé</h5>
+                        <p class="card-text text-muted">Gelado e refrescante 🍧</p>
+                    </div>
+                </div>
+            </a>
+        </div>
 
+        <!-- Card Moreninha -->
+        <div class="col-md-4">
+            <a href="{% url 'moreninha' %}" class="text-decoration-none">
+                <div class="card border-warning shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-snowflake fa-2x text-info mb-3"></i>
+                        <h5 class="card-title text-dark fw-bold">Moreninha</h5>
+                        <p class="card-text text-muted">Delícia gelada tradicional 🧊</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card Cremosinho -->
+        <div class="col-md-4">
+            <a href="{% url 'cremosinho' %}" class="text-decoration-none">
+                <div class="card border-warning shadow-sm h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-glass-martini-alt fa-2x text-danger mb-3"></i>
+                        <h5 class="card-title text-dark fw-bold">Cremosinho</h5>
+                        <p class="card-text text-muted">Cremoso e irresistível 🍨</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
 </div>
 {% endblock %}

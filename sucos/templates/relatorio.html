@@ -1,0 +1,82 @@
+{% extends 'venda.html' %}
+<!-- MENU -->
+{% block menu %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+        <!-- Logo e título -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+            <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
+            <span class="fw-bold fs-4" style="letter-spacing: 1px;">CIA DO SUCO</span>
+        </a>
+
+        <!-- Botão do menu hamburguer (mobile) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Itens do menu -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'relatorio' %}">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
+            </ul>
+
+            <!-- Mensagem de boas-vindas (visível apenas em telas grandes) -->
+        </a>
+        <a class="navbar-brand d-flex align-items-center text-white" href="{% url 'admin:index' %}">
+            <span class="fw-bold fs-4" style="letter-spacing: 1px;">Painel Admin 📈</span>
+        </a>
+        </div>
+    </div>
+</nav>
+
+    <!-- Banner de boas-vindas -->
+    <div class="bg-light py-4 text-center">
+        <div class="container">
+            <h1 class="display-5 text-success fw-bold">Pagina do Relatorio</h1>
+
+
+        </div>
+    </div>
+    {% endblock %}
+{% block conteudo %}
+<div class="container mt-5">
+    <h2 class="mb-4">Relatório da Compra</h2>
+
+    {% if itens %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                <tr>
+                    <td>{{ item.product.titulo }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>R$ {{ item.product.preco }}</td>
+                    <td>R$ {{ item.quantity|floatformat:2|add:item.product.preco|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-end">
+            <h4>Total da Compra: <strong>R$ {{ total|floatformat:2 }}</strong></h4>
+        </div>
+    {% else %}
+        <p>Nenhum item encontrado no relatório.</p>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'inicio' %}" class="btn btn-primary">Voltar para início</a>
+    </div>
+</div>
+{% endblock %}

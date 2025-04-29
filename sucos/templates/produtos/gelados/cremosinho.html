@@ -1,63 +1,79 @@
 {% extends 'produtos/suco.html' %}
 
-    <!-- DESTAQUE / BANNER -->
-    {% block destaque %}
-    <div class="jumbotron text-white text-center mb-0 destaque-banner">
-        <h1 class="display-4">Escolha os sabores de Cremosinho!</h1>
+{% block menu %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+            <i class="fas fa-cart-plus fa-lg me-2" style="color: #FFD700;"></i>
+            <span class="fw-bold fs-4" style="letter-spacing: 1px;">CIA DO SUCO</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
+            </ul>
+            <a class="navbar-brand text-white" href="{% url 'admin:index' %}">
+                <span class="fw-bold fs-5">Painel Admin 📈</span>
+            </a>
+        </div>
     </div>
-    {% endblock %}
+</nav>
 
+<div class="bg-light py-4 text-center">
+    <div class="container">
+        <h1 class="display-5 text-success fw-bold">Cremosinho 🧃</h1>
+        <p class="lead text-muted">Escolha seu cremosinho favorito e adicione ao seu carrinho!</p>
+    </div>
+</div>
+{% endblock %}
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    {% load static %}
-    
-    {% block conteudo %}
-    <div class="container my-4">
-        <h3>Produtos de Cremosinho</h3>
-        <p>Escolha o seu Cremosinho favorito!</p>
-        
-        {% if cremosinhos %}
-            <div class="row">
-                {% for cremosinho in cremosinhos %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ cremosinho.title }}</h5>
-                            <p class="card-text">
-                                Preço: R$ {{ cremosinho.price }}<br>
-                                Estoque: {{ cremosinho.quantity }}
-                            </p>
-                
-                            <!-- Formulário para adicionar ao carrinho -->
-                            <form method="post" action="{% url 'adicionar_carrinho' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="produto_id" value="{{ cremosinho.id }}">
-                            
-                                <div class="input-group mb-3">
-                                    <input type="number" 
-                                           name="quantidade"
-                                           value="1"
-                                           min="1"
-                                           max="{{ cremosinho.quantity }}"
-                                           class="form-control"
-                                           {% if cremosinho.quantity == 0 %}disabled{% endif %}>
-                                </div>
-                            
-                                <button type="submit"
-                                        class="btn btn-primary"
-                                        {% if cremosinho.quantity == 0 %}disabled{% endif %}>
-                                    {% if cremosinho.quantity == 0 %}Esgotado{% else %}Adicionar{% endif %}
-                                </button>
-                            </form>
-                            
+{% block conteudo %}
+<div class="container my-5">
+    {% if cremosinhos %}
+    <div class="row">
+        {% for cremosinho in cremosinhos %}
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm border-0 h-100">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="mb-3">
+                            <i class="fas fa-ice-cream fa-3x text-primary"></i>
+
                         </div>
+                        <h5 class="card-title">{{ cremosinho.title }}</h5>
+                        <p class="card-text">
+                            <strong>Preço:</strong> R$ {{ cremosinho.price }}<br>
+                            <strong>Estoque:</strong> {{ cremosinho.quantity }}
+                        </p>
                     </div>
+                    <form method="post" action="{% url 'adicionar_carrinho' %}" class="mt-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="produto_id" value="{{ cremosinho.id }}">
+                        <div class="input-group mb-2">
+                            <input type="number" name="quantidade" value="1" min="1" max="{{ cremosinho.quantity }}"
+                                   class="form-control" {% if cremosinho.quantity == 0 %}disabled{% endif %}>
+                        </div>
+                        <button type="submit" class="btn btn-outline-success w-100"
+                                {% if cremosinho.quantity == 0 %}disabled{% endif %}>
+                            {% if cremosinho.quantity == 0 %}Esgotado{% else %}Adicionar ao Carrinho{% endif %}
+                        </button>
+                    </form>
                 </div>
-                {% endfor %}
-                
             </div>
-        {% else %}
-            <p>Nenhum cremosinho disponível no momento!</p>
-        {% endif %}
+        </div>
+        {% endfor %}
     </div>
-    {% endblock %}
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert">
+        Nenhum cremosinho disponível no momento! 🧃
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

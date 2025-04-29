@@ -34,12 +34,38 @@ class Product(models.Model):
         return self.title
 
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    FORMA_PAGAMENTO_CHOICES = [
+        ('pix', 'Pix'),
+        ('dinheiro', 'Dinheiro'),
+        ('debito', 'Cartão de Débito'),
+        ('credito', 'Cartão de Crédito'),
+    ]
+    
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='cart',
+        primary_key=False
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+    finalizado = models.BooleanField(default=False)
+    finalizado_em = models.DateTimeField(null=True, blank=True)
+    forma_pagamento = models.CharField(max_length=20, choices=FORMA_PAGAMENTO_CHOICES, null=True, blank=True)
+    valor_total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
-        return f"Carrinho de {self.user.username}"
+        return f"Compra #{self.id} - {self.user.username}"
+    
+    @property
+    def total(self):
+        return sum(item.product.price * item.quantity for item in self.items.all())
+    
+    class Meta:
+        verbose_name = 'Venda'
+        verbose_name_plural = 'Vendas'
+        ordering = ['-finalizado_em']
 
+        
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey('Product', on_delete=models.CASCADE)

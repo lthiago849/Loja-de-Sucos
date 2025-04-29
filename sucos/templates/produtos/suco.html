@@ -1,63 +1,90 @@
 {% extends 'venda.html' %}
+{% load static %}
 
-    <!-- DESTAQUE / BANNER -->
-    {% block destaque %}
-    <div class="jumbotron text-white text-center mb-0 destaque-banner">
-        <h1 class="display-4">Escolha os sabores de Sucos!</h1>
+{% block menu %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+            <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
+            <span class="fw-bold fs-4">CIA DO SUCO</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'relatorio' %}">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
+            </ul>
+
+            <a class="navbar-brand text-white" href="{% url 'admin:index' %}">
+                <span class="fw-bold fs-5">Painel Admin 📈</span>
+            </a>
+        </div>
     </div>
-    {% endblock %}
-    
+</nav>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    {% load static %}
-    
-    {% block conteudo %}
-    <div class="container my-4">
-        <h3>Produtos de Sucos</h3>
-        <p>Escolha o seu suco favorito!</p>
-        
-        {% if sucos %}
-            <div class="row">
-                {% for suco in sucos %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ suco.title }}</h5>
-                            <p class="card-text">
-                                Preço: R$ {{ suco.price }}<br>
-                                Estoque: {{ suco.quantity }}
-                            </p>
-                
-                            <!-- Formulário para adicionar ao carrinho -->
-                            <form method="post" action="{% url 'adicionar_carrinho' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="produto_id" value="{{ suco.id }}">
-                            
-                                <div class="input-group mb-3">
-                                    <input type="number" 
-                                           name="quantidade"
-                                           value="1"
-                                           min="1"
-                                           max="{{ suco.quantity }}"
-                                           class="form-control"
-                                           {% if suco.quantity == 0 %}disabled{% endif %}>
-                                </div>
-                            
-                                <button type="submit"
-                                        class="btn btn-primary"
-                                        {% if suco.quantity == 0 %}disabled{% endif %}>
-                                    {% if suco.quantity == 0 %}Esgotado{% else %}Adicionar{% endif %}
-                                </button>
-                            </form>
-                            
-                        </div>
+
+{% endblock %}
+
+
+{% block conteudo %}
+<div class="container py-5">
+    <h2 class="text-center text-success fw-bold mb-3">Sucos Naturais 🍹</h2>
+    <p class="text-center text-muted mb-5">Escolha seu suco favorito e adicione ao carrinho!</p>
+
+    {% if sucos %}
+        <div class="row g-4">
+            {% for suco in sucos %}
+            <div class="col-md-4">
+                <div class="card border-success shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <!-- Ícone ou imagem -->
+                        <i class="fas fa-wine-glass-alt fa-2x text-success mb-3"></i>
+
+                        <h5 class="card-title fw-bold">{{ suco.title }}</h5>
+
+                        <p class="card-text text-muted">
+                            <strong>Preço:</strong> R$ {{ suco.price }} <br>
+                            <strong>Estoque:</strong> {{ suco.quantity }}
+                        </p>
+
+                        <!-- Formulário para adicionar ao carrinho -->
+                        <form method="post" action="{% url 'adicionar_carrinho' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="produto_id" value="{{ suco.id }}">
+
+                            <div class="input-group mb-3">
+                                <input type="number"
+                                       name="quantidade"
+                                       value="1"
+                                       min="1"
+                                       max="{{ suco.quantity }}"
+                                       class="form-control"
+                                       placeholder="Quantidade"
+                                       {% if suco.quantity == 0 %}disabled{% endif %}>
+                            </div>
+
+                            <button type="submit"
+                                    class="btn btn-outline-success w-100 fw-bold"
+                                    {% if suco.quantity == 0 %}disabled{% endif %}>
+                                {% if suco.quantity == 0 %}Esgotado{% else %}Adicionar ao Carrinho{% endif %}
+                            </button>
+                        </form>
                     </div>
                 </div>
-                {% endfor %}
-                
             </div>
-        {% else %}
-            <p>Nenhum suco disponível no momento!</p>
-        {% endif %}
-    </div>
-    {% endblock %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center mt-4" role="alert">
+            Nenhum suco disponível no momento! 😢
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

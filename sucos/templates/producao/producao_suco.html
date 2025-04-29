@@ -2,29 +2,81 @@
 
 {% load static %}
 
+{% block menu %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+            <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
+            <span class="fw-bold fs-4">CIA DO SUCO</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'relatorio' %}">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
+            </ul>
+
+            <a class="navbar-brand text-white" href="{% url 'admin:index' %}">
+                <span class="fw-bold fs-5">Painel Admin 📈</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="bg-light py-5 text-center">
+    <div class="container">
+        <h1 class="display-4 text-success fw-bold mb-3">Produção🧑‍🍳</h1>
+
+    </div>
+</div>
+{% endblock %}
+
+
 {% block conteudo %}
 <div class="container my-4">
-    <h3>Produtos de Sucos</h3>
-    <p>Escolha o seu suco favorito!</p>
+    <h3 class="text-center mb-4">Produtos de Sucos</h3>
+    <p class="text-center mb-4">Escolha o seu suco favorito para produção!</p>
     
     {% if sucos_producao %}
         <div class="row">
             {% for suco in sucos_producao %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                <div class="card shadow-sm rounded border-light">
+                    <!-- Imagem com ícone centralizado -->
+                    <div class="card-img-top position-relative" style="height: 200px; object-fit: cover;">
+                        <img class="w-100 h-100" alt="{{ suco.title }}">
+                        <div class="position-absolute top-50 start-50 translate-middle">
+                            <i class="fas fa-glass-whiskey fa-4x me-2" style="color: #f0df4a;"></i>
+                        </div>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">{{ suco.title }}</h5>
-                        <p class="card-text">
-                            Preço: R$ {{ suco.price }}<br>
-                            Estoque: <span id="estoque-{{ suco.id }}">{{ suco.quantity }}</span>
+                        <h5 class="card-title text-center">{{ suco.title }}</h5>
+                        <p class="card-text text-center">
+                            <strong>Preço:</strong> R$ {{ suco.price }}<br>
+                            <strong>Estoque:</strong> <span id="estoque-{{ suco.id }}">{{ suco.quantity }}</span>
                         </p>
-            
+                        
+                        <div class="d-flex justify-content-center">
+                            <button type="button" 
+                                    class="btn btn-primary btn-block w-75 mt-2"
+                                    onclick="mostrarForm({{ suco.id }})">
+                                <i class="fas fa-cogs"></i> Produção
+                            </button>
+                        </div>
+                        
                         <form id="form-producao-{{ suco.id }}" class="mt-3" style="display: none;">
                             {% csrf_token %}
                             <input type="hidden" name="produto_id" value="{{ suco.id }}">
                         
                             <div class="form-group">
-                                <label>Quantidade produzida:</label>
+                                <label for="quantidade-{{ suco.id }}">Quantidade produzida:</label>
                                 <input type="number" 
                                        id="quantidade-{{ suco.id }}"
                                        name="quantidade"
@@ -34,7 +86,7 @@
                             </div>
                             
                             <div class="form-group">
-                                <label>{{ suco.ingredient.category_ingredient.name }} utilizada:</label>
+                                <label for="polpa-{{ suco.id }}">{{ suco.ingredient.category_ingredient.name }} utilizada:</label>
                                 <input type="text"
                                        id="polpa-{{ suco.id }}"
                                        name="polpa"
@@ -45,7 +97,7 @@
                             </div>
                             
                             <div class="form-group">
-                                <label>Açúcar utilizado (kg):</label>
+                                <label for="acucar-{{ suco.id }}">Açúcar utilizado (kg):</label>
                                 <input type="text"
                                        id="acucar-{{ suco.id }}"
                                        name="acucar"
@@ -56,17 +108,11 @@
                             </div>
                             
                             <button type="button" 
-                                    class="btn btn-success btn-confirmar mt-2"
+                                    class="btn btn-success btn-block mt-3"
                                     onclick="confirmarProducao({{ suco.id }})">
-                                Confirmar Produção
+                                <i class="fas fa-check-circle"></i> Confirmar Produção
                             </button>
                         </form>
-                        
-                        <button type="button" 
-                                class="btn btn-primary btn-producao"
-                                onclick="mostrarForm({{ suco.id }})">
-                            Produção
-                        </button>
                         
                         <div id="feedback-{{ suco.id }}" class="mt-2 alert" style="display: none;"></div>
                     </div>
@@ -75,28 +121,25 @@
             {% endfor %}
         </div>
     {% else %}
-        <p>Nenhum suco disponível no momento!</p>
+        <p class="text-center">Nenhum suco disponível no momento!</p>
     {% endif %}
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
 <script>
 // Função para formatar o campo decimal durante a digitação
 function formatarDecimal(input) {
-    // Se o campo estiver vazio ou contiver apenas espaços, não faz nada
     if (!input.value || input.value.trim() === '') {
         return;
     }
-    
-    // Remove tudo exceto números e vírgula
+
     let valorFormatado = input.value.replace(/[^0-9,]/g, '');
     
-    // Garante apenas uma vírgula
     if ((valorFormatado.match(/,/g) || []).length > 1) {
         valorFormatado = valorFormatado.substring(0, valorFormatado.lastIndexOf(','));
     }
     
-    // Limita a 2 casas decimais após a vírgula
     if(valorFormatado.indexOf(',') > -1) {
         const partes = valorFormatado.split(',');
         if(partes[1].length > 2) {
@@ -104,7 +147,6 @@ function formatarDecimal(input) {
         }
     }
     
-    // Atualiza o valor do campo apenas se houver conteúdo
     if (valorFormatado !== '') {
         input.value = valorFormatado;
     }
@@ -122,7 +164,6 @@ function confirmarProducao(produtoId) {
     const acucar = form.find('[name="acucar"]').val().replace(',', '.');
     const csrfToken = form.find('[name="csrfmiddlewaretoken"]').val();
     
-    // Validações básicas
     if(quantidade <= 0) {
         mostrarFeedback(produtoId, 'Quantidade deve ser maior que zero', 'danger');
         return;
@@ -138,7 +179,6 @@ function confirmarProducao(produtoId) {
         return;
     }
     
-    // Formata os valores para 2 casas decimais
     const polpaFormatada = parseFloat(polpa).toFixed(2);
     const acucarFormatado = parseFloat(acucar).toFixed(2);
     
@@ -158,17 +198,14 @@ function confirmarProducao(produtoId) {
         dataType: 'json',
         success: function(response) {
             if(response.success) {
-                // Atualiza todos os estoques na tela
                 $(`#estoque-${produtoId}`).text(response.novo_estoque);
                 $(`#polpa-disponivel-${produtoId}`).text(response.polpa_restante);
                 $(`#acucar-disponivel`).text(response.acucar_restante);
                 
-                // Mensagem de sucesso
                 mostrarFeedback(produtoId, 
                     `${response.message}<br>Polpa restante: ${response.polpa_restante}kg<br>Açúcar restante: ${response.acucar_restante}kg`, 
                     'success');
                 
-                // Reseta o formulário
                 form.hide();
                 form.find('[name="quantidade"]').val(1);
                 form.find('[name="polpa"]').val('');
@@ -204,7 +241,6 @@ function mostrarFeedback(produtoId, mensagem, tipo) {
 }
 
 $(document).ready(function() {
-    // Aplica a formatação inicial para todos os campos decimais
     $('.input-decimal').each(function() {
         formatarDecimal(this);
     });
@@ -212,9 +248,28 @@ $(document).ready(function() {
 </script>
 
 <style>
+.card {
+    border: 0;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.card-img-top {
+    position: relative;
+}
+
 .btn-producao, .btn-confirmar {
-    margin-top: 10px;
     transition: all 0.3s ease;
+    font-weight: bold;
 }
 
 .btn-producao:hover, .btn-confirmar:hover {

@@ -1,63 +1,87 @@
 {% extends 'produtos/suco.html' %}
+{% load static %}
 
-    <!-- DESTAQUE / BANNER -->
-    {% block destaque %}
-    <div class="jumbotron text-white text-center mb-0 destaque-banner">
-        <h1 class="display-4">Escolha os sabores de Picole!</h1>
+<!-- MENU -->
+{% block menu %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
+            <i class="fas fa-ice-cream fa-lg me-2" style="color: #FFD700;"></i>
+            <span class="fw-bold fs-4" style="letter-spacing: 1px;">CIA DO SUCO</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
+            </ul>
+            <a class="navbar-brand d-flex align-items-center text-white" href="{% url 'admin:index' %}">
+                <span class="fw-bold fs-5">Painel Admin 📈</span>
+            </a>
+        </div>
     </div>
-    {% endblock %}
+</nav>
 
+<div class="bg-light py-4 text-center">
+    <div class="container">
+        <h1 class="display-5 text-success fw-bold">Página de Venda de Picolés 🍧</h1>
+    </div>
+</div>
+{% endblock %}
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    {% load static %}
-    
-    {% block conteudo %}
-    <div class="container my-4">
-        <h3>Produtos de Picoles</h3>
-        <p>Escolha o seu picole favorito!</p>
-        
-        {% if picoles %}
-            <div class="row">
-                {% for picole in picoles %}
-                <div class="col-md-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ picole.title }}</h5>
-                            <p class="card-text">
-                                Preço: R$ {{ picole.price }}<br>
-                                Estoque: {{ picole.quantity }}
-                            </p>
-                
-                            <!-- Formulário para adicionar ao carrinho -->
-                            <form method="post" action="{% url 'adicionar_carrinho' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="produto_id" value="{{ picole.id }}">
-                            
-                                <div class="input-group mb-3">
-                                    <input type="number" 
-                                           name="quantidade"
-                                           value="1"
-                                           min="1"
-                                           max="{{ picole.quantity }}"
-                                           class="form-control"
-                                           {% if picole.quantity == 0 %}disabled{% endif %}>
-                                </div>
-                            
-                                <button type="submit"
-                                        class="btn btn-primary"
-                                        {% if picole.quantity == 0 %}disabled{% endif %}>
-                                    {% if picole.quantity == 0 %}Esgotado{% else %}Adicionar{% endif %}
-                                </button>
-                            </form>
-                            
-                        </div>
+<!-- CONTEÚDO PRINCIPAL -->
+{% block conteudo %}
+<div class="container py-5">
+    <h2 class="text-center text-primary fw-bold mb-3">Deliciosos Picolés</h2>
+    <p class="text-center text-muted mb-5">Escolha seu picolé favorito e adicione ao carrinho!</p>
+
+    {% if picoles %}
+        <div class="row g-4">
+            {% for picole in picoles %}
+            <div class="col-md-4">
+                <div class="card border-primary shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-ice-cream fa-2x text-primary mb-3"></i>
+                        <h5 class="card-title fw-bold">{{ picole.title }}</h5>
+                        <p class="card-text text-muted">
+                            <strong>Preço:</strong> R$ {{ picole.price }}<br>
+                            <strong>Estoque:</strong> {{ picole.quantity }}
+                        </p>
+
+                        <form method="post" action="{% url 'adicionar_carrinho' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="produto_id" value="{{ picole.id }}">
+                            <div class="input-group mb-3">
+                                <input type="number"
+                                       name="quantidade"
+                                       value="1"
+                                       min="1"
+                                       max="{{ picole.quantity }}"
+                                       class="form-control"
+                                       {% if picole.quantity == 0 %}disabled{% endif %}>
+                            </div>
+                            <button type="submit"
+                                    class="btn btn-outline-primary w-100 fw-bold"
+                                    {% if picole.quantity == 0 %}disabled{% endif %}>
+                                {% if picole.quantity == 0 %}Esgotado{% else %}Adicionar ao Carrinho{% endif %}
+                            </button>
+                        </form>
                     </div>
                 </div>
-                {% endfor %}
-                
             </div>
-        {% else %}
-            <p>Nenhum picole disponível no momento!</p>
-        {% endif %}
-    </div>
-    {% endblock %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center mt-4" role="alert">
+            Nenhum picolé disponível no momento! 🥶
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
