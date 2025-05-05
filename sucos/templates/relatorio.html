@@ -1,21 +1,18 @@
 {% extends 'venda.html' %}
+
 <!-- MENU -->
 {% block menu %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
     <div class="container">
-        <!-- Logo e título -->
         <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
             <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
             <span class="fw-bold fs-4" style="letter-spacing: 1px;">CIA DO SUCO</span>
         </a>
-
-        <!-- Botão do menu hamburguer (mobile) -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Itens do menu -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
@@ -23,56 +20,49 @@
                 <li class="nav-item"><a class="nav-link" href="{% url 'relatorio' %}">Relatórios</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
             </ul>
-
-            <!-- Mensagem de boas-vindas (visível apenas em telas grandes) -->
-        </a>
-        <a class="navbar-brand d-flex align-items-center text-white" href="{% url 'admin:index' %}">
-            <span class="fw-bold fs-4" style="letter-spacing: 1px;">Painel Admin 📈</span>
-        </a>
         </div>
     </div>
 </nav>
+{% endblock %}
 
-    <!-- Banner de boas-vindas -->
-    <div class="bg-light py-4 text-center">
-        <div class="container">
-            <h1 class="display-5 text-success fw-bold">Pagina do Relatorio</h1>
-
-
-        </div>
-    </div>
-    {% endblock %}
+<!-- Conteúdo principal -->
 {% block conteudo %}
 <div class="container mt-5">
     <h2 class="mb-4">Relatório da Compra</h2>
 
-    {% if itens %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Quantidade</th>
-                    <th>Preço Unitário</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in itens %}
-                <tr>
-                    <td>{{ item.product.titulo }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>R$ {{ item.product.preco }}</td>
-                    <td>R$ {{ item.quantity|floatformat:2|add:item.product.preco|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    {% if vendas %}
+        <h3>{{ titulo_periodo }}</h3>
+        <p>Total de Vendas: {{ total_vendas }}</p>
+        <p>Total Vendido: R$ {{ total_vendido|floatformat:2 }}</p>
 
-        <div class="text-end">
-            <h4>Total da Compra: <strong>R$ {{ total|floatformat:2 }}</strong></h4>
-        </div>
+        {% if modo_admin %}
+            <h3>Formas de Pagamento</h3>
+            <ul>
+                {% for forma in formas_pagamento %}
+                    <li>{{ forma.forma_pagamento }}: R$ {{ forma.total|floatformat:2 }} ({{ forma.quantidade }} vendas)</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <hr>
+
+        {% for venda in vendas %}
+            <div>
+                <strong>Data:</strong> {{ venda.data }} <br>
+                <strong>Valor:</strong> R$ {{ venda.valor_total|floatformat:2 }} <br>
+                <strong>Forma de Pagamento:</strong> {{ venda.get_forma_pagamento_display }} <br>
+                <ul>
+                    {% for item in venda.itens.all %}
+                        <li>{{ item.quantidade }}x {{ item.produto.title }} - R$ {{ item.preco_unitario|floatformat:2 }}</li>
+                    {% endfor %}
+                </ul>
+                <hr>
+            </div>
+        {% empty %}
+            <p>Nenhuma venda encontrada.</p>
+        {% endfor %}
     {% else %}
-        <p>Nenhum item encontrado no relatório.</p>
+        <p>Nenhuma venda encontrada no relatório.</p>
     {% endif %}
 
     <div class="mt-4">

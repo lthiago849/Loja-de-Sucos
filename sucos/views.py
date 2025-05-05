@@ -218,83 +218,100 @@ from django.db import transaction
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 
+from .models import Venda, ItemVenda  # importe os modelos novos
+
 @login_required
 @transaction.atomic
 def finalizar_compra(request):
     if request.method == 'POST':
         try:
-            # Obter ou criar carrinho para o usuário
             carrinho = get_object_or_404(Cart, user=request.user, finalizado=False)
-            # Verificar se o carrinho está vazio
             if not carrinho.items.exists():
                 messages.error(request, 'Seu carrinho está vazio!')
-                return redirect('ver_carrinho')  # Redirecione para a página do carrinho
-            
-            # Obter forma de pagamento e valor total
+                return redirect('ver_carrinho')
+
             forma_pagamento = request.POST.get('forma_pagamento')
             valor_total = Decimal(request.POST.get('valor_total', '0').replace(',', '.'))
-            
-            # Verificar e atualizar estoque para cada item
+
+            # Verificação e atualização do estoque
             for item in carrinho.items.all():
                 produto = item.product
-                
                 if produto.quantity < item.quantity:
                     messages.error(request, f'Estoque insuficiente para {produto.title}. Disponível: {produto.quantity}')
                     return redirect('ver_carrinho')
-                
                 produto.quantity -= item.quantity
                 produto.save()
-            
-            # Marcar carrinho como finalizado
+
+            # Marcar o carrinho como finalizado
             carrinho.finalizado = True
             carrinho.finalizado_em = timezone.now()
             carrinho.forma_pagamento = forma_pagamento
             carrinho.valor_total = valor_total
             carrinho.save()
-            
-            messages.success(request, 'Compra finalizada com sucesso! Estoque atualizado.')
-            return redirect('relatorio_compra')  # Crie esta URL
-            
+
+            # Criar a venda
+            venda = Venda.objects.create(
+                user=request.user,
+                data=carrinho.finalizado_em,
+                forma_pagamento=forma_pagamento,
+                valor_total=valor_total
+            )
+
+            # Criar os itens da venda
+            for item in carrinho.items.all():
+                ItemVenda.objects.create(
+                    venda=venda,
+                    produto=item.product,
+                    quantidade=item.quantity,
+                    preco_unitario=item.product.price
+                )
+
+            messages.success(request, 'Compra finalizada com sucesso! Estoque e histórico atualizados.')
+            return redirect('relatorio_compra')
+
         except Exception as e:
             messages.error(request, f'Ocorreu um erro: {str(e)}')
             return redirect('ver_carrinho')
-    
+
     return redirect('ver_carrinho')
+
 
 from django.db.models import Sum, Count
 from django.utils import timezone
 from datetime import timedelta
 
+@login_required
 def relatorio_vendas(request):
-    # Filtros temporais
-    periodo = request.GET.get('periodo', 'hoje')
-    
     hoje = timezone.now().date()
-    vendas = Cart.objects.filter(finalizado=True)
-    
+    periodo = request.GET.get('periodo', 'hoje')
+
+    # Se for staff/admin, mostra tudo; senão, só do usuário logado
+    if request.user.is_staff:
+        vendas = Venda.objects.all()
+    else:
+        vendas = Venda.objects.filter(user=request.user)
+
+    # Filtros de período
     if periodo == 'hoje':
-        vendas = vendas.filter(finalizado_em__date=hoje)
+        vendas = vendas.filter(data__date=hoje)
         titulo_periodo = "Hoje"
     elif periodo == 'semana':
         inicio_semana = hoje - timedelta(days=hoje.weekday())
-        vendas = vendas.filter(finalizado_em__date__gte=inicio_semana)
+        vendas = vendas.filter(data__date__gte=inicio_semana)
         titulo_periodo = "Esta Semana"
     elif periodo == 'mes':
-        vendas = vendas.filter(finalizado_em__year=hoje.year, finalizado_em__month=hoje.month)
+        vendas = vendas.filter(data__year=hoje.year, data__month=hoje.month)
         titulo_periodo = "Este Mês"
-    else:  # todos
+    else:
         titulo_periodo = "Todos os Períodos"
-    
-    # Estatísticas
+
     total_vendido = vendas.aggregate(total=Sum('valor_total'))['total'] or 0
     total_vendas = vendas.count()
-    
-    # Por forma de pagamento
     formas_pagamento = vendas.values('forma_pagamento').annotate(
         total=Sum('valor_total'),
         quantidade=Count('id')
     )
-    
+
     context = {
         'vendas': vendas,
         'total_vendido': total_vendido,
@@ -302,8 +319,9 @@ def relatorio_vendas(request):
         'formas_pagamento': formas_pagamento,
         'periodo': periodo,
         'titulo_periodo': titulo_periodo,
+        'modo_admin': request.user.is_staff,
     }
-    
+
     return render(request, 'relatorio.html', context)
 
 from django.shortcuts import render

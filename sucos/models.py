@@ -104,3 +104,22 @@ class CategoryIngredient(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Venda(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    data = models.DateTimeField()
+    forma_pagamento = models.CharField(max_length=30)
+    valor_total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"Venda #{self.id} - {self.user.username if self.user else 'Anônimo'}"
+
+
+class ItemVenda(models.Model):
+    venda = models.ForeignKey(Venda, related_name='itens', on_delete=models.CASCADE)
+    produto = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True)
+    quantidade = models.PositiveIntegerField()
+    preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.quantidade}x {self.produto.title if self.produto else 'Produto removido'}"
