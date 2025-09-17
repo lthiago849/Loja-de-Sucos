@@ -3,6 +3,10 @@ from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from .models import Product, Cart, CartItem
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
+from django.db.models import Sum, Count
+from django.utils import timezone
+from datetime import timedelta
 
 # Create your views here.
 class IndexView(TemplateView):
@@ -20,14 +24,68 @@ class InicioView(TemplateView):
 class GeladosView(TemplateView):
     template_name = 'produtos/gelados/gelados.html'
 
-
-
 class RelatorioView(TemplateView):
     template_name = 'relatorio.html'
-
-# class ProducaoSucoView(TemplateView):
-#     template_name = 'producao/producao_suco.html'
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        hoje = timezone.now().date()
+        periodo = self.request.GET.get('periodo', 'hoje')
+        
+        # Base das vendas
+        vendas = Venda.objects.all()
+        
+        # Aplicar filtros de período
+        if periodo == 'hoje':
+            vendas = vendas.filter(data__date=hoje)
+            titulo_periodo = "Hoje"
+        elif periodo == 'semana':
+            inicio_semana = hoje - timedelta(days=hoje.weekday())
+            vendas = vendas.filter(data__date__gte=inicio_semana)
+            titulo_periodo = "Esta Semana"
+        elif periodo == 'mes':
+            vendas = vendas.filter(data__year=hoje.year, data__month=hoje.month)
+            titulo_periodo = "Este Mês"
+        else:
+            titulo_periodo = "Todas as Vendas"
+        
+        # Estatísticas gerais
+        total_vendido = vendas.aggregate(total=Sum('valor_total'))['total'] or 0
+        total_vendas = vendas.count()
+        
+        # Relatório por forma de pagamento
+        formas_pagamento = vendas.values('forma_pagamento').annotate(
+            total=Sum('valor_total'),
+            quantidade=Count('id')
+        ).order_by('-total')
+        
+        # Calcular percentuais
+        for forma in formas_pagamento:
+            if total_vendido > 0:
+                forma['percentual'] = (forma['total'] / total_vendido) * 100
+            else:
+                forma['percentual'] = 0
+            
+            # Nome amigável da forma de pagamento
+            forma_nome = {
+                'pix': 'Pix',
+                'dinheiro': 'Dinheiro',
+                'debito': 'Cartão de Débito',
+                'credito': 'Cartão de Crédito'
+            }.get(forma['forma_pagamento'], forma['forma_pagamento'])
+            forma['nome'] = forma_nome
+        
+        context.update({
+            'vendas': vendas.order_by('-data'),
+            'total_vendido': total_vendido,
+            'total_vendas': total_vendas,
+            'formas_pagamento': formas_pagamento,
+            'periodo': periodo,
+            'titulo_periodo': titulo_periodo,
+        })
+        
+        return context
 
 def listar_sucos(request):
     sucos = Product.objects.filter(category__name='Suco', is_active = True )
@@ -64,15 +122,13 @@ def listar_cremosinho(request):
     return render(request, 'produtos/gelados/cremosinho.html', {'cremosinhos': cremosinho})
 
 
-@login_required
 def adicionar_ao_carrinho(request):
     if request.method == 'POST':
         produto_id = request.POST.get('produto_id')
         quantidade = int(request.POST.get('quantidade', 1))
         produto = get_object_or_404(Product, id=produto_id)
 
-        cart, _ = Cart.objects.get_or_create(user=request.user)
-
+        cart, created = Cart.objects.get_or_create(user=request.user, finalizado=False)
         item, created = CartItem.objects.get_or_create(cart=cart, product=produto)
         if not created:
             item.quantity += quantidade
@@ -82,9 +138,8 @@ def adicionar_ao_carrinho(request):
 
     return redirect('ver_carrinho')
 
-@login_required
 def ver_carrinho(request):
-    cart, _ = Cart.objects.get_or_create(user=request.user)
+    cart, created = Cart.objects.get_or_create(user=request.user, finalizado=False)   
     itens_queryset = cart.items.select_related('product')
 
     itens = []
@@ -102,14 +157,12 @@ def ver_carrinho(request):
 
     return render(request, 'ver_carrinho.html', {'cart': cart, 'itens': itens, 'total': total})
 
-@login_required
 def remover_do_carrinho(request, item_id):
     item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     item.delete()
     return redirect('ver_carrinho')
 
 
-@login_required
 def atualizar_carrinho(request, item_id):
     if request.method == 'POST':
         nova_quantidade = int(request.POST.get('quantidade', 1))
@@ -216,23 +269,27 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.db import transaction
 from decimal import Decimal
-from django.contrib.auth.decorators import login_required
 
 from .models import Venda, ItemVenda  # importe os modelos novos
-
-@login_required
 @transaction.atomic
 def finalizar_compra(request):
     if request.method == 'POST':
         try:
-            carrinho = get_object_or_404(Cart, user=request.user, finalizado=False)
+            # Buscar carrinho não finalizado
+            carrinho = Cart.objects.filter(user=request.user, finalizado=False).first()
+            
+            if not carrinho:
+                # Se não tem carrinho, criar um novo
+                carrinho = Cart.objects.create(user=request.user, finalizado=False)
+            
+            # Verificar se tem itens
             if not carrinho.items.exists():
                 messages.error(request, 'Seu carrinho está vazio!')
                 return redirect('ver_carrinho')
-
+            
             forma_pagamento = request.POST.get('forma_pagamento')
             valor_total = Decimal(request.POST.get('valor_total', '0').replace(',', '.'))
-
+            
             # Verificação e atualização do estoque
             for item in carrinho.items.all():
                 produto = item.product
@@ -241,14 +298,14 @@ def finalizar_compra(request):
                     return redirect('ver_carrinho')
                 produto.quantity -= item.quantity
                 produto.save()
-
+            
             # Marcar o carrinho como finalizado
             carrinho.finalizado = True
             carrinho.finalizado_em = timezone.now()
             carrinho.forma_pagamento = forma_pagamento
             carrinho.valor_total = valor_total
             carrinho.save()
-
+            
             # Criar a venda
             venda = Venda.objects.create(
                 user=request.user,
@@ -256,7 +313,7 @@ def finalizar_compra(request):
                 forma_pagamento=forma_pagamento,
                 valor_total=valor_total
             )
-
+            
             # Criar os itens da venda
             for item in carrinho.items.all():
                 ItemVenda.objects.create(
@@ -265,22 +322,20 @@ def finalizar_compra(request):
                     quantidade=item.quantity,
                     preco_unitario=item.product.price
                 )
-
-            messages.success(request, 'Compra finalizada com sucesso! Estoque e histórico atualizados.')
-            return redirect('relatorio_compra')
-
+            
+            messages.success(request, 'Compra finalizada com sucesso!')
+            return redirect('relatorio')
+            
         except Exception as e:
             messages.error(request, f'Ocorreu um erro: {str(e)}')
             return redirect('ver_carrinho')
-
+    
     return redirect('ver_carrinho')
-
 
 from django.db.models import Sum, Count
 from django.utils import timezone
 from datetime import timedelta
 
-@login_required
 def relatorio_vendas(request):
     hoje = timezone.now().date()
     periodo = request.GET.get('periodo', 'hoje')
@@ -292,9 +347,11 @@ def relatorio_vendas(request):
         vendas = Venda.objects.filter(user=request.user)
 
     # Filtros de período
+    # Filtros de período  
     if periodo == 'hoje':
         vendas = vendas.filter(data__date=hoje)
-        titulo_periodo = "Hoje"
+    elif periodo == 'todos':  # ← ADICIONE ESTA OPÇÃO
+        pass  # Não filtra, mostra todas
     elif periodo == 'semana':
         inicio_semana = hoje - timedelta(days=hoje.weekday())
         vendas = vendas.filter(data__date__gte=inicio_semana)

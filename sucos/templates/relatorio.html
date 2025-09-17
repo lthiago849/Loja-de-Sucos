@@ -1,72 +1,243 @@
 {% extends 'venda.html' %}
 
-<!-- MENU -->
 {% block menu %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{% url 'inicio' %}">
-            <i class="fas fa-glass-whiskey fa-lg me-2" style="color: #FFD700;"></i>
-            <span class="fw-bold fs-4" style="letter-spacing: 1px;">CIA DO SUCO</span>
+            <i class="fas fa-chart-line fa-lg me-2" style="color: #FFD700;"></i>
+            <span class="fw-bold fs-4">CIA DO SUCO</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'relatorio' %}">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{% url 'relatorio' %}">Relatórios</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
             </ul>
         </div>
     </div>
 </nav>
+
+<div class="bg-light py-4 text-center">
+    <div class="container">
+        <h1 class="display-5 text-success fw-bold">📊 Relatório de Vendas</h1>
+        <p class="lead text-muted">{{ titulo_periodo }}</p>
+    </div>
+</div>
 {% endblock %}
 
-<!-- Conteúdo principal -->
 {% block conteudo %}
-<div class="container mt-5">
-    <h2 class="mb-4">Relatório da Compra</h2>
-
-    {% if vendas %}
-        <h3>{{ titulo_periodo }}</h3>
-        <p>Total de Vendas: {{ total_vendas }}</p>
-        <p>Total Vendido: R$ {{ total_vendido|floatformat:2 }}</p>
-
-        {% if modo_admin %}
-            <h3>Formas de Pagamento</h3>
-            <ul>
-                {% for forma in formas_pagamento %}
-                    <li>{{ forma.forma_pagamento }}: R$ {{ forma.total|floatformat:2 }} ({{ forma.quantidade }} vendas)</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        <hr>
-
-        {% for venda in vendas %}
-            <div>
-                <strong>Data:</strong> {{ venda.data }} <br>
-                <strong>Valor:</strong> R$ {{ venda.valor_total|floatformat:2 }} <br>
-                <strong>Forma de Pagamento:</strong> {{ venda.get_forma_pagamento_display }} <br>
-                <ul>
-                    {% for item in venda.itens.all %}
-                        <li>{{ item.quantidade }}x {{ item.produto.title }} - R$ {{ item.preco_unitario|floatformat:2 }}</li>
-                    {% endfor %}
-                </ul>
-                <hr>
+<div class="container my-4">
+    <!-- Filtros de Período -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Filtros de Período</h5>
+        </div>
+        <div class="card-body">
+            <div class="btn-group" role="group">
+                <a href="?periodo=hoje" class="btn {% if periodo == 'hoje' %}btn-primary{% else %}btn-outline-primary{% endif %}">Hoje</a>
+                <a href="?periodo=semana" class="btn {% if periodo == 'semana' %}btn-primary{% else %}btn-outline-primary{% endif %}">Esta Semana</a>
+                <a href="?periodo=mes" class="btn {% if periodo == 'mes' %}btn-primary{% else %}btn-outline-primary{% endif %}">Este Mês</a>
+                <a href="?periodo=todos" class="btn {% if periodo == 'todos' %}btn-primary{% else %}btn-outline-primary{% endif %}">Todas</a>
             </div>
-        {% empty %}
-            <p>Nenhuma venda encontrada.</p>
-        {% endfor %}
+        </div>
+    </div>
+
+    <!-- Cards de Resumo -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                    <h4>{{ total_vendas }}</h4>
+                    <p class="mb-0">Total de Vendas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                    <h4>R$ {{ total_vendido|floatformat:2 }}</h4>
+                    <p class="mb-0">Total Faturado</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relatório por Forma de Pagamento -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Vendas por Forma de Pagamento</h5>
+        </div>
+        <div class="card-body">
+            {% if formas_pagamento %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Forma de Pagamento</th>
+                                <th>Quantidade</th>
+                                <th>Total</th>
+                                <th>% do Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for forma in formas_pagamento %}
+                            <tr>
+                                <td>
+                                    {% if forma.forma_pagamento == 'pix' %}
+                                        <i class="fas fa-mobile-alt text-primary"></i> {{ forma.nome }}
+                                    {% elif forma.forma_pagamento == 'dinheiro' %}
+                                        <i class="fas fa-money-bill-wave text-success"></i> {{ forma.nome }}
+                                    {% elif forma.forma_pagamento == 'debito' %}
+                                        <i class="fas fa-credit-card text-info"></i> {{ forma.nome }}
+                                    {% elif forma.forma_pagamento == 'credito' %}
+                                        <i class="fas fa-credit-card text-warning"></i> {{ forma.nome }}
+                                    {% else %}
+                                        {{ forma.nome }}
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ forma.quantidade }}</strong></td>
+                                <td><strong>R$ {{ forma.total|floatformat:2 }}</strong></td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" 
+                                             style="width: {{ forma.percentual|default:0 }}%;"
+                                             role="progressbar">
+                                            {{ forma.percentual|floatformat:1 }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted text-center">Nenhuma venda encontrada para este período.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Histórico de Vendas -->
+    {% if vendas %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Histórico de Vendas</h5>
+            <small class="text-muted">{{ total_vendas }} venda{{ total_vendas|pluralize:"s" }} encontrada{{ total_vendas|pluralize:"s" }}</small>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Data/Hora</th>
+                            <th>Forma de Pagamento</th>
+                            <th>Valor Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venda in vendas %}
+                        <tr>
+                            <td><strong>{{ venda.id }}</strong></td>
+                            <td>{{ venda.data|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if venda.forma_pagamento == 'pix' %}bg-primary
+                                    {% elif venda.forma_pagamento == 'dinheiro' %}bg-success
+                                    {% elif venda.forma_pagamento == 'debito' %}bg-info
+                                    {% elif venda.forma_pagamento == 'credito' %}bg-warning
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ venda.get_forma_pagamento_display }}
+                                </span>
+                            </td>
+                            <td><strong>R$ {{ venda.valor_total|floatformat:2 }}</strong></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#vendaModal{{ venda.id }}">
+                                    <i class="fas fa-eye"></i> Ver Detalhes
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals para detalhes das vendas -->
+    {% for venda in vendas %}
+    <div class="modal fade" id="vendaModal{{ venda.id }}" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalhes da Venda #{{ venda.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Data:</strong> {{ venda.data|date:"d/m/Y H:i:s" }}<br>
+                            <strong>Forma de Pagamento:</strong> {{ venda.get_forma_pagamento_display }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Valor Total:</strong> R$ {{ venda.valor_total|floatformat:2 }}
+                        </div>
+                    </div>
+                    
+                    <h6>Itens da Venda:</h6>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Preço Unit.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in venda.itens.all %}
+                            <tr>
+                                <td>{{ item.produto.title }}</td>
+                                <td>{{ item.quantidade }}</td>
+                                <td>R$ {{ item.preco_unitario|floatformat:2 }}</td>
+                                <td>
+                                    {% widthratio item.quantidade 1 item.preco_unitario as subtotal %}
+                                    R$ {{ subtotal|floatformat:2 }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
     {% else %}
-        <p>Nenhuma venda encontrada no relatório.</p>
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                <h4>Nenhuma venda encontrada</h4>
+                <p class="text-muted">Não há vendas registradas para o período selecionado.</p>
+                <a href="{% url 'venda' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Fazer Nova Venda
+                </a>
+            </div>
+        </div>
     {% endif %}
 
-    <div class="mt-4">
-        <a href="{% url 'inicio' %}" class="btn btn-primary">Voltar para início</a>
+    <div class="mt-4 text-center">
+        <a href="{% url 'inicio' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar para Início
+        </a>
     </div>
 </div>
 {% endblock %}

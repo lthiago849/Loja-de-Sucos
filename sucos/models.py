@@ -41,11 +41,10 @@ class Cart(models.Model):
         ('credito', 'Cartão de Crédito'),
     ]
     
-    user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE, 
-        related_name='cart',
-        primary_key=False
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='carts'
     )
     created_at = models.DateTimeField(auto_now_add=True)
     finalizado = models.BooleanField(default=False)
