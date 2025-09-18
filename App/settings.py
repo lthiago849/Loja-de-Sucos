@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin',
+    # 'jazzmin',
     'django.contrib.humanize',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -128,38 +128,38 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-JAZZMIN_SETTINGS = {
-    # title of the window (Will default to current_admin_site.site_title if absent or None)
-    'site_title': 'Cia do Suco',
+# JAZZMIN_SETTINGS = {
+#     # title of the window (Will default to current_admin_site.site_title if absent or None)
+#     'site_title': 'Cia do Suco',
 
-    # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    'site_header': 'Cia do Suco',
+#     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+#     'site_header': 'Cia do Suco',
 
-    # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    'site_brand': 'Cia do Suco',
+#     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+#     'site_brand': 'Cia do Suco',
 
-    'icons': {
-        'auth': 'fas fa-users-cog',
-        'auth.user': 'fas fa-user',
-        'auth.Group': 'fas fa-users',
-        'products.Brand': 'fas fa-copyright',
-        'products.Category': 'fa-solid fa-list',
-        'products.Product': 'fas fa-box',
-    },
+#     'icons': {
+#         'auth': 'fas fa-users-cog',
+#         'auth.user': 'fas fa-user',
+#         'auth.Group': 'fas fa-users',
+#         'products.Brand': 'fas fa-copyright',
+#         'products.Category': 'fa-solid fa-list',
+#         'products.Product': 'fas fa-box',
+#     },
 
-    # Welcome text on the login screen
-    'welcome_sign': 'Bem-vindo(a) ao Cia do Suco',
+#     # Welcome text on the login screen
+#     'welcome_sign': 'Bem-vindo(a) ao Cia do Suco',
 
-    # Copyright on the footer
-    'copyright': 'PycodeBR LTDA',
+#     # Copyright on the footer
+#     'copyright': 'PycodeBR LTDA',
 
-    # List of model admins to search from the search bar, search bar omitted if excluded
-    # If you want to use a single search field you dont need to use a list, you can use a simple string 
-    'search_model': ['products.Product',],
+#     # List of model admins to search from the search bar, search bar omitted if excluded
+#     # If you want to use a single search field you dont need to use a list, you can use a simple string 
+#     'search_model': ['products.Product',],
 
-    # Whether to show the UI customizer on the sidebar
-    'show_ui_builder': True,
-}
+#     # Whether to show the UI customizer on the sidebar
+#     'show_ui_builder': True,
+# }
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
