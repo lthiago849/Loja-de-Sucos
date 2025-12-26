@@ -13,8 +13,13 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body">
                         <h5 class="card-title text-success fw-bold">{{ item.category_ingredient.name }}</h5>
+                        
                         <p class="card-text">
-                            <strong>Estoque Atual:</strong> <span id="estoque-{{ item.id }}">{{ item.quantity|floatformat:2 }}</span>
+                            <strong>Estoque Atual:</strong> 
+                            <span id="estoque-{{ item.id }}" class="badge bg-secondary" style="font-size: 1em;">
+                                {{ item.quantity|floatformat }}
+                            </span>
+                            <small class="text-muted">unid</small>
                         </p>
                         
                         <button type="button" class="btn btn-outline-success w-100" onclick="mostrarForm({{ item.id }})">
@@ -25,7 +30,7 @@
                             {% csrf_token %}
                             <div class="mb-2">
                                 <label>Quantidade Comprada:</label>
-                                <input type="text" name="quantidade" class="form-control input-decimal" placeholder="0,00">
+                                <input type="text" name="quantidade" class="form-control input-decimal" placeholder="Ex: 10 ou 2,5">
                             </div>
                             
                             <button type="button" class="btn btn-success w-100 mt-2" onclick="confirmarCompra({{ item.id }})">
@@ -43,9 +48,11 @@
     {% endif %}
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 function mostrarForm(id) {
-    $(`#form-compra-${id}`).toggle();
+    // Usamos toggle para abrir/fechar
+    $(`#form-compra-${id}`).slideToggle();
 }
 
 function confirmarCompra(id) {
@@ -53,8 +60,13 @@ function confirmarCompra(id) {
     const qtde = form.find('[name="quantidade"]').val();
     const csrfToken = form.find('[name="csrfmiddlewaretoken"]').val();
 
+    // Feedback visual de carregamento
+    const btn = form.find('button');
+    const btnTextoOriginal = btn.html();
+    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Salvando...');
+
     $.ajax({
-        url: "{% url 'adicionar_estoque_ingrediente' %}", // Certifique-se de criar esta URL
+        url: "{% url 'adicionar_estoque_ingrediente' %}",
         method: "POST",
         data: {
             'ingrediente_id': id,
@@ -63,19 +75,36 @@ function confirmarCompra(id) {
         },
         success: function(response) {
             if(response.success) {
-                $(`#estoque-${id}`).text(response.novo_estoque.toFixed(2));
+                // Atualiza o número na tela
+                $(`#estoque-${id}`).text(response.novo_estoque.replace('.', ','));
                 mostrarFeedback(id, response.message, 'success');
-                form.hide().find('input').val('');
+                
+                // Limpa e esconde o formulário
+                form.slideUp().find('[name="quantidade"]').val('');
+            } else {
+                mostrarFeedback(id, response.message, 'danger');
             }
         },
         error: function(xhr) {
-            mostrarFeedback(id, "Erro ao atualizar estoque", 'danger');
+            mostrarFeedback(id, "Erro de conexão com o servidor.", 'danger');
+        },
+        complete: function() {
+            // Restaura o botão
+            btn.prop('disabled', false).html(btnTextoOriginal);
         }
     });
 }
 
 function mostrarFeedback(id, msg, tipo) {
-    $(`#feedback-${id}`).removeClass('alert-success alert-danger').addClass(`alert-${tipo}`).html(msg).show().delay(3000).fadeOut();
+    const feedback = $(`#feedback-${id}`);
+    feedback.removeClass('alert-success alert-danger')
+            .addClass(`alert-${tipo}`)
+            .html(msg)
+            .fadeIn();
+            
+    setTimeout(function() { 
+        feedback.fadeOut(); 
+    }, 4000);
 }
 </script>
 {% endblock %}

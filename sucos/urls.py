@@ -11,7 +11,7 @@ urlpatterns = [
     path('modelo/', ModeloView.as_view(), name='modelo'),
     path('', InicioView.as_view(), name = 'inicio'),
     path('gelados/', GeladosView.as_view(), name = 'gelados'),
-    path('estoque/', EstoqueView.as_view(), name = 'estoque'),
+    path('estoque/', listar_compras_ingredientes, name='estoque'),
 
     path('relatorio/', RelatorioView.as_view(), name = 'relatorio'),
     path('minha-acao/', minha_view_personalizada, name='produto_minha_view_personalizada'),
