@@ -7,7 +7,9 @@ from django.db.models import Sum
 from django.db.models import Sum, Count
 from django.utils import timezone
 from datetime import timedelta
-
+from .models import Venda, Ingredient
+from django.views.decorators.http import require_POST
+from decimal import Decimal
 # Create your views here.
 class IndexView(TemplateView):
     template_name = 'index.html'
@@ -23,6 +25,10 @@ class InicioView(TemplateView):
 
 class GeladosView(TemplateView):
     template_name = 'produtos/gelados/gelados.html'
+
+class EstoqueView(TemplateView):
+    template_name = 'estoque/estoque.html'
+
 
 class RelatorioView(TemplateView):
     template_name = 'relatorio.html'
@@ -91,6 +97,37 @@ def listar_sucos(request):
     sucos = Product.objects.filter(category__name='Suco', is_active = True )
     return render(request, 'produtos/suco.html', {'sucos':sucos})
 
+# --- NOVAS VIEWS PARA COMPRA DE MERCADORIA (INGREDIENTES) ---
+
+def listar_compras_ingredientes(request):
+    # Verifique se o nome da variável é 'ingredientes' (como usado no HTML)
+    ingredientes = Ingredient.objects.all().order_by('category_ingredient__name')
+    return render(request, 'estoque/estoque.html', {'ingredientes': ingredientes})
+
+@require_POST
+def adicionar_estoque_ingrediente(request):
+    """Processa o aumento de estoque de um ingrediente específico"""
+    try:
+        ingrediente_id = request.POST.get('ingrediente_id')
+        # Recebe a quantidade, tratando a vírgula caso o usuário digite no padrão PT-BR
+        quantidade_comprada = Decimal(request.POST.get('quantidade', '0').replace(',', '.'))
+        
+        if quantidade_comprada <= 0:
+            return JsonResponse({'success': False, 'message': 'A quantidade deve ser maior que zero.'})
+
+        ingrediente = get_object_or_404(Ingredient, id=ingrediente_id)
+        
+        # Soma a nova quantidade ao estoque atual
+        ingrediente.quantity += quantidade_comprada
+        ingrediente.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Estoque de {ingrediente.category_ingredient.name} atualizado com sucesso!',
+            'novo_estoque': str(ingrediente.quantity.quantize(Decimal('0.00')))
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Erro ao processar: {str(e)}'})
 def listar_sucos_producao(request):
     sucos_producao = Product.objects.filter(category__name='Suco', is_active=True)
     

@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import IndexView, VendaView, ModeloView, InicioView, GeladosView, RelatorioView
+from .views import IndexView, VendaView, ModeloView, InicioView, GeladosView, RelatorioView, EstoqueView
 # from .views import SucoView
-from .views import listar_sucos,listar_picole,listar_moreninha,listar_cremosinho, listar_sucos_producao, adicionar_producao
+from .views import listar_sucos,listar_picole,listar_moreninha,listar_cremosinho, listar_sucos_producao, adicionar_producao, listar_compras_ingredientes, adicionar_estoque_ingrediente
 from .views import adicionar_ao_carrinho,  ver_carrinho,  remover_do_carrinho, atualizar_carrinho, finalizar_compra, minha_view_personalizada
 
 
@@ -11,6 +11,7 @@ urlpatterns = [
     path('modelo/', ModeloView.as_view(), name='modelo'),
     path('', InicioView.as_view(), name = 'inicio'),
     path('gelados/', GeladosView.as_view(), name = 'gelados'),
+    path('estoque/', EstoqueView.as_view(), name = 'estoque'),
 
     path('relatorio/', RelatorioView.as_view(), name = 'relatorio'),
     path('minha-acao/', minha_view_personalizada, name='produto_minha_view_personalizada'),
@@ -29,4 +30,6 @@ urlpatterns = [
     path('carrinho/',ver_carrinho, name='ver_carrinho'),
     path('carrinho/remover/<int:item_id>/', remover_do_carrinho, name='remover_do_carrinho'),
     path('carrinho/atualizar/<int:item_id>/', atualizar_carrinho, name='atualizar_carrinho'),
+    path('compras/', listar_compras_ingredientes, name='compras_ingredientes'),
+    path('compras/adicionar/', adicionar_estoque_ingrediente, name='adicionar_estoque_ingrediente'),
 ]

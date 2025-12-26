@@ -1,4 +1,4 @@
-#!/home/thiago/Documentos/SUCO/venv/bin/python3
+#!/home/thiago/Documentos/Projetos/Loja-de-Sucos/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

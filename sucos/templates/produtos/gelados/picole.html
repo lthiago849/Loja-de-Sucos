@@ -19,7 +19,8 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="{% url 'venda' %}">Vendas</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'sucos-producao' %}">Produção</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Relatórios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'estoque' %}">Estoque</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'relatorio' %}">Relatórios</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'ver_carrinho' %}">🛒 Carrinho</a></li>
             </ul>
             <a class="navbar-brand d-flex align-items-center text-white" href="{% url 'admin:index' %}">
